@@ -42,6 +42,25 @@ public:
 };
 
 /**************************************************
+** FreightCar class
+**************************************************/
+class FreightCar : Car
+{
+private:
+	string reportingMark;
+	int carNumber;
+	string kind;
+	bool loaded;
+	string destination;
+public:
+	FreightCar () { Car::setup ("", 0, "other", false, "NONE"); } //default constructor
+	FreightCar (const FreightCar &CarObj) { Car::setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
+	FreightCar (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup (reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
+	~FreightCar () {} // destructor
+	FreightCar & FreightCar::operator=(const FreightCar & carB);
+};
+
+/**************************************************
 ** StringOfCars class
 **************************************************/
 
@@ -152,6 +171,24 @@ void Car::output ()
 ** operator over load for Car class assignment =
 **************************************************/
 Car & Car::operator=(const Car & carB)
+{
+	setup (carB.reportingMark, carB.carNumber, carB.kind, carB.loaded, carB.destination);
+
+	return *this;
+}
+
+/**************************************************
+** FreightCar class method definitions
+**************************************************/
+
+/***************FreightCar::setup *****************
+** Puts the car data into the object
+**************************************************/
+
+/********************* operator= ******************
+** operator over load for Car class assignment =
+**************************************************/
+FreightCar & FreightCar::operator=(const FreightCar & carB)
 {
 	setup (carB.reportingMark, carB.carNumber, carB.kind, carB.loaded, carB.destination);
 
