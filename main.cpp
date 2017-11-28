@@ -24,7 +24,7 @@ using namespace std;
 **************************************************/
 class Car
 {
-private:
+protected:
 	string reportingMark;
 	int carNumber;
 	string kind;
@@ -34,30 +34,40 @@ public:
 	Car () { setup ("", 0, "other", false, "NONE"); } //default constructor
 	Car (const Car &CarObj) { setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
 	Car (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup (reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
-	~Car () {} // destructor
+	virtual ~Car () {} // destructor
 	void setup (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit);
 	void output ();
 	Car & Car::operator=(const Car & carB);
 	friend bool Car::operator==(const Car CarObj1, const Car CarObj2);
+	virtual void setKind (std::string kindInit);
 };
 
 /**************************************************
 ** FreightCar class
 **************************************************/
-class FreightCar : Car
+class FreightCar : public Car
 {
-private:
-	string reportingMark;
-	int carNumber;
-	string kind;
-	bool loaded;
-	string destination;
 public:
-	FreightCar () { Car::setup ("", 0, "other", false, "NONE"); } //default constructor
-	FreightCar (const FreightCar &CarObj) { Car::setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
+	FreightCar () { setup ("", 0, "other", false, "NONE"); } //default constructor
+	FreightCar (const FreightCar &CarObj) { setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
 	FreightCar (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup (reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
-	~FreightCar () {} // destructor
+	~FreightCar () {}
 	FreightCar & FreightCar::operator=(const FreightCar & carB);
+	virtual void setKind (std::string kindInit);
+};
+
+/**************************************************
+** PassengerCar class
+**************************************************/
+class PassengerCar : public Car
+{
+public:
+	PassengerCar () { setup ("", 0, "other", false, "NONE"); } //default constructor
+	PassengerCar (const PassengerCar &CarObj) { setup (CarObj.reportingMark, CarObj.carNumber, CarObj.kind, CarObj.loaded, CarObj.destination); } //copy constructor
+	PassengerCar (string reportingMarkInit, int carNumberInit, string kindInit, bool loadedInit, string destinationInit) { setup (reportingMarkInit, carNumberInit, kindInit, loadedInit, destinationInit); } //other constructor
+	~PassengerCar () {}
+	PassengerCar & PassengerCar::operator=(const PassengerCar & carB);
+	virtual void setKind (std::string kindInit);
 };
 
 /**************************************************
@@ -111,27 +121,13 @@ void input (StringOfCars & StringOfCarsObj);
 
 int main ()
 {
-	// Test the Car operator=   function. 
-	cout << "TEST 1" << endl;
-	Car car1 ("SP", 34567, "business", true, "Salt Lake City");
-	Car car2;
-	car2 = car1;
+	Car car1 ("SLSF", 46871, "wrecker", true, "Memphis");
+	car1.output ();
+	FreightCar car2 ("MP", 98765, "gondola", true, "Saint Louis");
 	car2.output ();
-	// Test the StringOfCar push function.
-	cout << "TEST 2" << endl;
-	StringOfCars string1;
-	input (string1);
-	cout << "STRING 1" << endl;
-	string1.output ();
-	// Test the StringOfCars pop function. 
-	cout << "TEST 3" << endl;
-	Car car3;
-	string1.pop (car3);
-	cout << "CAR 3" << endl;
+	PassengerCar car3 ("PAPX", 145, "combine", true, "Tucson");
 	car3.output ();
-	cout << "STRING 1" << endl;
-	string1.output ();
-	system ("pause");
+	//system ("pause");
 	return 0;
 }
 
@@ -146,9 +142,10 @@ void Car::setup (string reportingMarkInit, int carNumberInit, string kindInit, b
 {
 	reportingMark = reportingMarkInit;
 	carNumber = carNumberInit;
-	kind = kindInit;
+	(*this).setKind (kindInit);
 	loaded = loadedInit;
 	destination = destinationInit;
+
 }
 
 /********************* Car::output ****************
@@ -177,12 +174,20 @@ Car & Car::operator=(const Car & carB)
 	return *this;
 }
 
+/********************* Car::setKind ***************
+** Sets the car kind
+**************************************************/
+void Car::setKind (std::string kindInit)
+{
+	kind = "other";
+	if (kindInit == "business" || kindInit == "maintenance")
+	{
+		kind = kindInit;
+	}
+}
+
 /**************************************************
 ** FreightCar class method definitions
-**************************************************/
-
-/***************FreightCar::setup *****************
-** Puts the car data into the object
 **************************************************/
 
 /********************* operator= ******************
@@ -194,6 +199,45 @@ FreightCar & FreightCar::operator=(const FreightCar & carB)
 
 	return *this;
 }
+
+/**************** FreightCar::setKind *************
+** Sets the car kind
+**************************************************/
+void FreightCar::setKind (std::string kindInit)
+{
+	kind = "otherFreight";
+	if (kindInit == "box" || kindInit == "tank" || kindInit == "flat")
+	{
+		kind = kindInit;
+	}
+}
+
+/**************************************************
+** PassengerCar class method definitions
+**************************************************/
+
+/********************* operator= ******************
+** operator over load for Car class assignment =
+**************************************************/
+PassengerCar & PassengerCar::operator=(const PassengerCar & carB)
+{
+	setup (carB.reportingMark, carB.carNumber, carB.kind, carB.loaded, carB.destination);
+
+	return *this;
+}
+
+/**************** FreightCar::setKind *************
+** Sets the car kind
+**************************************************/
+void PassengerCar::setKind (std::string kindInit)
+{
+	kind = "otherPassenger";
+	if (kindInit == "chair" || kindInit == "sleeper")
+	{
+		kind = kindInit;
+	}
+}
+
 
 /**************************************************
 ** StringOfCars class method definitions
@@ -306,56 +350,21 @@ void input (StringOfCars & StringOfCarsObj)
 }
 
 /* Execution results
-TEST 1
-reportingMark:  SP
-carNumber:      34567
-kind:           business
-loaded:         true
-destination:    Salt Lake City
-
-TEST 2
-STRING 1
-Car #1
-reportingMark:  CN
-carNumber:      819481
-kind:           maintenance
-loaded:         false
-destination:    NONE
-
-Car #2
 reportingMark:  SLSF
 carNumber:      46871
-kind:           business
+kind:           other
 loaded:         true
 destination:    Memphis
 
-Car #3
-reportingMark:  AOK
-carNumber:      156
-kind:           tender
+reportingMark:  MP
+carNumber:      98765
+kind:           otherFreight
 loaded:         true
-destination:    McAlester
+destination:    Saint Louis
 
-TEST 3
-CAR 3
-reportingMark:  AOK
-carNumber:      156
-kind:           tender
+reportingMark:  PAPX
+carNumber:      145
+kind:           otherPassenger
 loaded:         true
-destination:    McAlester
-
-STRING 1
-Car #1
-reportingMark:  CN
-carNumber:      819481
-kind:           maintenance
-loaded:         false
-destination:    NONE
-
-Car #2
-reportingMark:  SLSF
-carNumber:      46871
-kind:           business
-loaded:         true
-destination:    Memphis
+destination:    Tucson
 */
